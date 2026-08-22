@@ -17,9 +17,11 @@ st.markdown("Bienvenidos al sistema de asistencia del consultorio")
 
 modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de pacientes", "Ejercicio 3", "Ejercicio 4"])
 
-if modulos == "Módulo Listas":
+if modulos == ""Ejercicio 1: Flujo de caja":
+
+
   
-  st.write("Bienvenido al módulo Listas")
+  st.subheader("Modulo de caja")
   
   valor_inicial = st.number_input("Ingrese el valor inicial")
   valor_final = st.number_input("Ingrese el valor final")

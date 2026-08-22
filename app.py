@@ -11,7 +11,7 @@ st.sidebar.title("Ejercicios")
 
 
 
-modulos = st.sidebar.selectbox ("Selecione un módulo", ["Módulo Listas", "Módulo Arreglos", "Módulo Funciones", "Archivos"])
+modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1", "Ejercicio 2", "Ejercicio 3", "Ejercicio 4"])
 
 if modulos == "Módulo Listas":
   

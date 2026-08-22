@@ -11,6 +11,7 @@ st.subheader("2026")
 
 st.sidebar.image("Neurolab solo logo.png")
 st.sidebar.title("Ejercicios")
+st.markdown("Bienvenidos al sistema de asistencia del consultorio")
 
 
 

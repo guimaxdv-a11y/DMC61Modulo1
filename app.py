@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import libreria_funciones_proyecto1 as lf
 
-st.title("Especialización Python for Analytics")
-
+st.title("Desarrollo del aprendizaje en Python for Analytics")
+st.subheader("Módulo 1 – Python Fundamentals"(
 st.header("Elaborado por: Guillermo Donayre")
 st.sidebar.image("Neurolab solo logo.png")
 st.sidebar.title("Ejercicios")

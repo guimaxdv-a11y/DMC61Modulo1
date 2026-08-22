@@ -5,7 +5,7 @@ import libreria_funciones_proyecto1 as lf
 
 st.title("Especialización Python for Analytics")
 st.sidebar.title("Parámetros")
-st.write("Elaborado por: Guillermo Donayre")
+st.header("Elaborado por: Guillermo Donayre")
 st.sidebar.image("Neurolab solo logo.png")
 
 

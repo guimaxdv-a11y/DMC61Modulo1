@@ -17,7 +17,7 @@ st.markdown("Bienvenidos al sistema de asistencia del consultorio")
 
 modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de pacientes", "Ejercicio 3", "Ejercicio 4"])
 
-if modulos == ""Ejercicio 1: Flujo de caja":
+if modulos == "Ejercicio 1: Flujo de caja":
 
 
   

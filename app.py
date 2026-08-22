@@ -7,13 +7,14 @@ st.title("Desarrollo del aprendizaje en Python for Analytics")
 st.subheader("Módulo 1 – Python Fundamentals")
 st.header("Elaborado por: Guillermo Donayre Vásquez")
 st.subheader("Medico Neurólogo - Hospital Regional de Loreto")
+st.subheader("2026")
 
 st.sidebar.image("Neurolab solo logo.png")
 st.sidebar.title("Ejercicios")
 
 
 
-modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1", "Ejercicio 2", "Ejercicio 3", "Ejercicio 4"])
+modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de pacientes", "Ejercicio 3", "Ejercicio 4"])
 
 if modulos == "Módulo Listas":
   

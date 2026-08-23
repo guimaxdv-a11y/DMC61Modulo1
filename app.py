@@ -46,7 +46,7 @@ if modulos == "🏠 Home":
     st.markdown("""
     ### 📝 Descripción del Proyecto
     Aplicación interactiva que integra los conceptos fundamentales del Módulo 1:
-    variables, estructuras de datos, control de flujo, funciones, POO y Streamlit.
+    variables, estructuras de datos, control de flujo, funciones, POO y Streamlit con apoyo de IA
 
     ### 🛠️ Tecnologías utilizadas
     - **Python 3.x** | **Streamlit** | **NumPy** | **Pandas**

@@ -61,55 +61,104 @@ if modulos == "🏠 Home":
 # ============================================
 # EJERCICIO 1 - FLUJO DE CAJA
 # ============================================
+# ============================================
+# EJERCICIO 1 - FLUJO DE CAJA (VERSIÓN CORREGIDA)
+# ============================================
 elif modulos == "📊 Ejercicio 1: Flujo de caja":
+    # ------------------------------------------------------------
+    # PASO 1: Encabezado del módulo
+    # ------------------------------------------------------------
     st.subheader("📊 Módulo de Flujo de Caja")
     st.markdown("Registra movimientos financieros (ingresos/gastos) y visualiza el saldo en tiempo real.")
 
-    init_state("movimientos", [])
-    init_state("ej1_campos", {"concepto": "", "tipo": "Ingreso", "valor": 0.0})
+    # ------------------------------------------------------------
+    # PASO 2: Inicialización del estado (session_state)
+    # ------------------------------------------------------------
+    init_state("movimientos", [])           # Lista de movimientos
+    init_state("ej1_concepto", "")          # Clave para el concepto
+    init_state("ej1_tipo", "Ingreso")       # Clave para el tipo (por defecto "Ingreso")
+    init_state("ej1_valor", 0.0)            # Clave para el valor
 
+    # ------------------------------------------------------------
+    # PASO 3: Formulario de entrada (3 columnas)
+    # ------------------------------------------------------------
     st.markdown("### Registrar nuevo movimiento")
     c1, c2, c3 = st.columns(3)
     with c1:
-        concepto = st.text_input("Concepto", value=st.session_state.ej1_campos["concepto"],
-                                 key="ej1_concepto", placeholder="Ej: Consulta médica")
+        # El valor se toma directamente de la clave, sin parámetro value
+        concepto = st.text_input(
+            "Concepto",
+            key="ej1_concepto",
+            placeholder="Ej: Consulta médica"
+        )
     with c2:
-        tipo = st.selectbox("Tipo", ["Ingreso", "Gasto"], key="ej1_tipo")
+        tipo = st.selectbox(
+            "Tipo",
+            ["Ingreso", "Gasto"],
+            key="ej1_tipo"
+        )
     with c3:
-        valor = st.number_input("Valor (S/.)", min_value=0.0, step=0.01, format="%.2f",
-                                value=st.session_state.ej1_campos["valor"], key="ej1_valor")
+        valor = st.number_input(
+            "Valor (S/.)",
+            min_value=0.0,
+            step=0.01,
+            format="%.2f",
+            key="ej1_valor"
+        )
 
+    # ------------------------------------------------------------
+    # PASO 4: Botones de acción (Agregar y Limpiar)
+    # ------------------------------------------------------------
     c_btn1, c_btn2 = st.columns(2)
     with c_btn1:
         agregar = st.button("➕ Agregar movimiento", use_container_width=True)
     with c_btn2:
         limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
 
+    # ------------------------------------------------------------
+    # PASO 5: Lógica del botón "Agregar"
+    # ------------------------------------------------------------
     if agregar:
         if concepto.strip() == "" or valor <= 0:
             st.error("⚠️ Ingresa un concepto válido y un valor mayor a 0.")
         else:
-            st.session_state.movimientos.append({"Concepto": concepto.strip(), "Tipo": tipo, "Valor": valor})
+            st.session_state.movimientos.append({
+                "Concepto": concepto.strip(),
+                "Tipo": tipo,
+                "Valor": valor
+            })
             st.success(f"✅ Movimiento '{concepto}' agregado.")
 
+    # ------------------------------------------------------------
+    # PASO 6: Lógica del botón "Limpiar" (CORREGIDO)
+    # ------------------------------------------------------------
     if limpiar:
-        st.session_state.ej1_campos = {"concepto": "", "tipo": "Ingreso", "valor": 0.0}
-        st.rerun()
+        # Resetear las claves de los widgets directamente
+        st.session_state.ej1_concepto = ""
+        st.session_state.ej1_tipo = "Ingreso"
+        st.session_state.ej1_valor = 0.0
+        # No se necesita st.rerun()
 
+    # ------------------------------------------------------------
+    # PASO 7: Visualización del historial, estadísticas y reinicio
+    # ------------------------------------------------------------
     st.markdown("### Historial de movimientos")
     if st.session_state.movimientos:
         df = pd.DataFrame(st.session_state.movimientos)
         st.dataframe(df, use_container_width=True)
 
+        # Cálculo de totales y saldo
         total_ing = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Ingreso")
         total_gas = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Gasto")
         saldo = total_ing - total_gas
 
+        # Métricas en 3 columnas
         c_m1, c_m2, c_m3 = st.columns(3)
         c_m1.metric("💰 Total Ingresos", f"S/. {total_ing:.2f}")
         c_m2.metric("💸 Total Gastos", f"S/. {total_gas:.2f}")
         c_m3.metric("📈 Saldo Final", f"S/. {saldo:.2f}")
 
+        # Mensaje de estado del flujo
         if saldo > 0:
             st.success(f"✅ Flujo **A FAVOR**: S/. {saldo:.2f}")
         elif saldo < 0:
@@ -119,11 +168,13 @@ elif modulos == "📊 Ejercicio 1: Flujo de caja":
     else:
         st.info("ℹ️ No hay movimientos registrados.")
 
+    # Botón para reiniciar todo (CORREGIDO)
     if st.button("🗑️ Reiniciar flujo de caja"):
         st.session_state.movimientos = []
-        st.session_state.ej1_campos = {"concepto": "", "tipo": "Ingreso", "valor": 0.0}
-        st.rerun()
-
+        st.session_state.ej1_concepto = ""
+        st.session_state.ej1_tipo = "Ingreso"
+        st.session_state.ej1_valor = 0.0
+        # No se necesita st.rerun()
 # ============================================
 # EJERCICIO 2 - EXÁMENES DE LABORATORIO
 # ============================================

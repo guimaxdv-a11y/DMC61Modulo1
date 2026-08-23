@@ -1,385 +1,261 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import libreria_funciones_proyecto1 as lf
-
-st.title("Desarrollo del aprendizaje en Python for Analytics")
-st.subheader("Módulo 1 – Python Fundamentals")
-st.header("Elaborado por: Guillermo Donayre Vásquez")
-st.subheader("Medico Neurólogo - Hospital Regional de Loreto")
-st.subheader("2026")
-
-st.sidebar.image("Neurolab solo logo.png")
-st.sidebar.title("Ejercicios")
-st.markdown("Bienvenidos al sistema de asistencia del consultorio")
-
-modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de Laboratorio", "Ejercicio 3", "Ejercicio 4"])
-
 
 # ============================================
-# EJERCICIO 1: FLUJO DE CAJA CON LISTAS
+# CONFIGURACIÓN INICIAL
 # ============================================
+st.set_page_config(page_title="Python for Analytics - Proyecto 1", page_icon="🧠", layout="wide")
 
-st.subheader("📊 Módulo de Flujo de Caja")
-st.markdown("""
-En este módulo podrás registrar movimientos financieros (ingresos y gastos) 
-y visualizar el estado actual de tu flujo de caja en tiempo real.
-""")
+# Función auxiliar para inicializar session_state
+def init_state(key, default):
+    if key not in st.session_state:
+        st.session_state[key] = default
 
-# Inicializar la lista de movimientos en session_state
-if "movimientos" not in st.session_state:
-    st.session_state.movimientos = []
+# Inicializar selección del módulo (HOME por defecto)
+init_state("modulo_seleccionado", "🏠 Home")
 
-# Widgets de entrada
-st.markdown("### Registrar nuevo movimiento")
+opciones_menu = ["🏠 Home", "📊 Ejercicio 1: Flujo de caja", "📦 Ejercicio 2: Registro con NumPy",
+                 "🔧 Ejercicio 3: Funciones externas", "🗂️ Ejercicio 4: Clases y CRUD"]
 
-col1, col2, col3 = st.columns(3)
+# ============================================
+# SIDEBAR
+# ============================================
+st.sidebar.image("Neurolab solo logo.png", use_container_width=True)
+st.sidebar.title("📋 Menú de Ejercicios")
+st.sidebar.markdown("---")
+st.sidebar.markdown("**Sistema de asistencia del consultorio**")
+st.sidebar.markdown("---")
 
-with col1:
-    concepto = st.text_input("Concepto", placeholder="Ej: Consulta médica")
-
-with col2:
-    tipo = st.selectbox("Tipo de movimiento", ["Ingreso", "Gasto"])
-
-with col3:
-    valor = st.number_input("Valor (S/.)", min_value=0.0, step=0.01, format="%.2f")
-
-# Botón para agregar movimiento
-if st.button("➕ Agregar movimiento"):
-    if concepto == "" or valor <= 0:
-        st.error("⚠️ Por favor, ingresa un concepto válido y un valor mayor a 0.")
-    else:
-        nuevo_movimiento = {
-            "Concepto": concepto,
-            "Tipo": tipo,
-            "Valor": valor
-        }
-        st.session_state.movimientos.append(nuevo_movimiento)
-        st.success(f"✅ Movimiento '{concepto}' agregado correctamente.")
-
-# Mostrar tabla de movimientos
-st.markdown("### Historial de movimientos")
-
-if len(st.session_state.movimientos) > 0:
-    df_movimientos = pd.DataFrame(st.session_state.movimientos)
-    st.dataframe(df_movimientos, use_container_width=True)
-
-    # Cálculos
-    total_ingresos = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Ingreso")
-    total_gastos = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Gasto")
-    saldo_final = total_ingresos - total_gastos
-
-    # Métricas
-    st.markdown("### Resumen financiero")
-    col_m1, col_m2, col_m3 = st.columns(3)
-
-    with col_m1:
-        st.metric("💰 Total Ingresos", f"S/. {total_ingresos:.2f}")
-
-    with col_m2:
-        st.metric("💸 Total Gastos", f"S/. {total_gastos:.2f}")
-
-    with col_m3:
-        st.metric("📈 Saldo Final", f"S/. {saldo_final:.2f}")
-
-    # Estado del flujo de caja
-    st.markdown("### Estado del flujo de caja")
-    if saldo_final > 0:
-        st.success(f"✅ El flujo de caja está **A FAVOR** con un saldo de S/. {saldo_final:.2f}")
-    elif saldo_final < 0:
-        st.error(f"❌ El flujo de caja está **EN CONTRA** con un déficit de S/. {abs(saldo_final):.2f}")
-    else:
-        st.warning("⚠️ El flujo de caja está **EQUILIBRADO** (saldo = 0)")
-
-else:
-    st.info("ℹ️ Aún no has registrado movimientos. Comienza agregando uno arriba.")
-
-# Botón para reiniciar
-if st.button("🗑️ Reiniciar flujo de caja"):
-    st.session_state.movimientos = []
+if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
+    st.session_state.modulo_seleccionado = "🏠 Home"
     st.rerun()
 
+st.sidebar.markdown("---")
+
+modulos = st.sidebar.selectbox(
+    "Seleccione un módulo", opciones_menu,
+    key="modulo_seleccionado",
+    index=opciones_menu.index(st.session_state.modulo_seleccionado)
+)
 
 # ============================================
-# EJERCICIO 2: REGISTRO DE EXÁMENES DE LABORATORIO
-# CON NUMPY, ARRAYS Y DATAFRAME
+# HOME
 # ============================================
+if modulos == "🏠 Home":
+    st.title("Desarrollo del aprendizaje en Python for Analytics")
+    st.subheader("Módulo 1 – Python Fundamentals")
+    st.header("Elaborado por: Guillermo Donayre Vásquez")
+    st.subheader("Médico Neurólogo - Hospital Regional de Loreto")
+    st.subheader("2026")
+    st.markdown("---")
+    st.markdown("""
+    ### 📝 Descripción del Proyecto
+    Aplicación interactiva que integra los conceptos fundamentales del Módulo 1:
+    variables, estructuras de datos, control de flujo, funciones, POO y Streamlit.
 
-st.subheader("🧪 Módulo de Registro de Exámenes de Laboratorio")
-st.markdown("""
-En este módulo podrás registrar **exámenes de laboratorio** de pacientes utilizando 
-**arreglos de NumPy** como estructura de almacenamiento. Cada registro se convierte 
-luego en un **DataFrame** para su visualización y análisis clínico.
-""")
+    ### 🛠️ Tecnologías utilizadas
+    - **Python 3.x** | **Streamlit** | **NumPy** | **Pandas**
 
-# ----------------------------------------------------
-# Inicialización de arrays en session_state
-# ----------------------------------------------------
-if "arr_paciente" not in st.session_state:
-    st.session_state.arr_paciente = np.array([], dtype=object)
-if "arr_examen" not in st.session_state:
-    st.session_state.arr_examen = np.array([], dtype=object)
-if "arr_categoria" not in st.session_state:
-    st.session_state.arr_categoria = np.array([], dtype=object)
-if "arr_resultado" not in st.session_state:
-    st.session_state.arr_resultado = np.array([], dtype=float)
-if "arr_referencia" not in st.session_state:
-    st.session_state.arr_referencia = np.array([], dtype=float)
-if "arr_unidad" not in st.session_state:
-    st.session_state.arr_unidad = np.array([], dtype=object)
-if "arr_estado" not in st.session_state:
-    st.session_state.arr_estado = np.array([], dtype=object)
+    ### 📋 Estructura
+    1. **📊 Ejercicio 1**: Flujo de caja con listas
+    2. **📦 Ejercicio 2**: Registro con NumPy, arrays y DataFrame
+    3. **🔧 Ejercicio 3**: Uso de funciones desde librería externa
+    4. **🗂️ Ejercicio 4**: Uso de clases con operaciones CRUD
+    """)
 
-# Valores para los widgets (permite limpiarlos)
-if "lab_paciente" not in st.session_state:
-    st.session_state.lab_paciente = ""
-if "lab_examen" not in st.session_state:
-    st.session_state.lab_examen = "Glucosa en ayunas"
-if "lab_categoria" not in st.session_state:
-    st.session_state.lab_categoria = "Química sanguínea"
-if "lab_resultado" not in st.session_state:
-    st.session_state.lab_resultado = 0.0
-if "lab_referencia" not in st.session_state:
-    st.session_state.lab_referencia = 0.0
-if "lab_unidad" not in st.session_state:
-    st.session_state.lab_unidad = "mg/dL"
+# ============================================
+# EJERCICIO 1 - FLUJO DE CAJA
+# ============================================
+elif modulos == "📊 Ejercicio 1: Flujo de caja":
+    st.subheader("📊 Módulo de Flujo de Caja")
+    st.markdown("Registra movimientos financieros (ingresos/gastos) y visualiza el saldo en tiempo real.")
 
-# ----------------------------------------------------
-# Formulario de ingreso
-# ----------------------------------------------------
-st.markdown("### Registrar nuevo examen de laboratorio")
+    init_state("movimientos", [])
+    init_state("ej1_campos", {"concepto": "", "tipo": "Ingreso", "valor": 0.0})
 
-categorias_examen = [
-    "Hematología",
-    "Química sanguínea",
-    "Perfil lipídico",
-    "Examen de orina",
-    "Marcadores inflamatorios",
-    "Función hepática",
-    "Función renal",
-    "Electrolitos"
-]
+    st.markdown("### Registrar nuevo movimiento")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        concepto = st.text_input("Concepto", value=st.session_state.ej1_campos["concepto"],
+                                 key="ej1_concepto", placeholder="Ej: Consulta médica")
+    with c2:
+        tipo = st.selectbox("Tipo", ["Ingreso", "Gasto"], key="ej1_tipo")
+    with c3:
+        valor = st.number_input("Valor (S/.)", min_value=0.0, step=0.01, format="%.2f",
+                                value=st.session_state.ej1_campos["valor"], key="ej1_valor")
 
-examenes_sugeridos = {
-    "Hematología": ["Hemoglobina", "Hematocrito", "Leucocitos", "Plaquetas"],
-    "Química sanguínea": ["Glucosa en ayunas", "HbA1c", "Urea", "Creatinina", "Ácido úrico"],
-    "Perfil lipídico": ["Colesterol total", "HDL", "LDL", "Triglicéridos"],
-    "Examen de orina": ["Proteínas en orina", "Glucosa en orina", "Densidad"],
-    "Marcadores inflamatorios": ["PCR", "VSG", "Procalcitonina"],
-    "Función hepática": ["AST (TGO)", "ALT (TGP)", "Bilirrubina total", "Albúmina"],
-    "Función renal": ["Depuración de creatinina", "Microalbuminuria"],
-    "Electrolitos": ["Sodio", "Potasio", "Calcio", "Magnesio"]
-}
+    c_btn1, c_btn2 = st.columns(2)
+    with c_btn1:
+        agregar = st.button("➕ Agregar movimiento", use_container_width=True)
+    with c_btn2:
+        limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
 
-unidades_sugeridas = {
-    "Hemoglobina": "g/dL", "Hematocrito": "%", "Leucocitos": "x10^3/µL",
-    "Plaquetas": "x10^3/µL", "Glucosa en ayunas": "mg/dL", "HbA1c": "%",
-    "Urea": "mg/dL", "Creatinina": "mg/dL", "Ácido úrico": "mg/dL",
-    "Colesterol total": "mg/dL", "HDL": "mg/dL", "LDL": "mg/dL",
-    "Triglicéridos": "mg/dL", "PCR": "mg/L", "VSG": "mm/h",
-    "AST (TGO)": "U/L", "ALT (TGP)": "U/L", "Bilirrubina total": "mg/dL",
-    "Albúmina": "g/dL", "Sodio": "mEq/L", "Potasio": "mEq/L",
-    "Calcio": "mg/dL", "Magnesio": "mg/dL"
-}
+    if agregar:
+        if concepto.strip() == "" or valor <= 0:
+            st.error("⚠️ Ingresa un concepto válido y un valor mayor a 0.")
+        else:
+            st.session_state.movimientos.append({"Concepto": concepto.strip(), "Tipo": tipo, "Valor": valor})
+            st.success(f"✅ Movimiento '{concepto}' agregado.")
 
-col1, col2 = st.columns(2)
+    if limpiar:
+        st.session_state.ej1_campos = {"concepto": "", "tipo": "Ingreso", "valor": 0.0}
+        st.rerun()
 
-with col1:
-    paciente = st.text_input(
-        "👤 Nombre del paciente",
-        value=st.session_state.lab_paciente,
-        key="input_paciente_lab",
-        placeholder="Ej: Juan Pérez García"
-    )
-    categoria = st.selectbox(
-        "📋 Categoría del examen",
-        categorias_examen,
-        index=categorias_examen.index(st.session_state.lab_categoria),
-        key="input_categoria_lab"
-    )
+    st.markdown("### Historial de movimientos")
+    if st.session_state.movimientos:
+        df = pd.DataFrame(st.session_state.movimientos)
+        st.dataframe(df, use_container_width=True)
 
-with col2:
-    # Lista de exámenes según la categoría seleccionada
-    examenes_disponibles = examenes_sugeridos.get(categoria, ["Otro"])
-    if st.session_state.lab_examen not in examenes_disponibles:
-        st.session_state.lab_examen = examenes_disponibles[0]
+        total_ing = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Ingreso")
+        total_gas = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Gasto")
+        saldo = total_ing - total_gas
 
-    examen = st.selectbox(
-        "🔬 Tipo de examen",
-        examenes_disponibles,
-        index=examenes_disponibles.index(st.session_state.lab_examen),
-        key="input_examen_lab"
-    )
+        c_m1, c_m2, c_m3 = st.columns(3)
+        c_m1.metric("💰 Total Ingresos", f"S/. {total_ing:.2f}")
+        c_m2.metric("💸 Total Gastos", f"S/. {total_gas:.2f}")
+        c_m3.metric("📈 Saldo Final", f"S/. {saldo:.2f}")
 
-    # Unidad sugerida según el examen
-    unidad_sugerida = unidades_sugeridas.get(examen, "UI")
-    unidad = st.text_input(
-        "📏 Unidad de medida",
-        value=unidad_sugerida,
-        key="input_unidad_lab"
-    )
-
-col3, col4 = st.columns(2)
-
-with col3:
-    resultado = st.number_input(
-        "📊 Resultado obtenido",
-        min_value=0.0,
-        step=0.01,
-        format="%.2f",
-        value=st.session_state.lab_resultado,
-        key="input_resultado_lab"
-    )
-
-with col4:
-    referencia = st.number_input(
-        "📐 Valor de referencia (límite superior)",
-        min_value=0.0,
-        step=0.01,
-        format="%.2f",
-        value=st.session_state.lab_referencia,
-        key="input_referencia_lab"
-    )
-
-# Determinar estado automáticamente
-if referencia > 0:
-    if resultado <= referencia:
-        estado = "Normal"
-        color_estado = "🟢"
+        if saldo > 0:
+            st.success(f"✅ Flujo **A FAVOR**: S/. {saldo:.2f}")
+        elif saldo < 0:
+            st.error(f"❌ Flujo **EN CONTRA**: S/. {abs(saldo):.2f}")
+        else:
+            st.warning("⚠️ Flujo **EQUILIBRADO** (saldo = 0)")
     else:
-        estado = "Alterado"
-        color_estado = "🔴"
-    st.info(f"💡 Estado calculado automáticamente: **{color_estado} {estado}** (resultado vs. valor de referencia)")
-else:
-    estado = "Sin evaluar"
-    color_estado = "⚪"
+        st.info("ℹ️ No hay movimientos registrados.")
 
-# ----------------------------------------------------
-# Botones de acción
-# ----------------------------------------------------
-col_btn1, col_btn2 = st.columns(2)
+    if st.button("🗑️ Reiniciar flujo de caja"):
+        st.session_state.movimientos = []
+        st.session_state.ej1_campos = {"concepto": "", "tipo": "Ingreso", "valor": 0.0}
+        st.rerun()
 
-with col_btn1:
-    agregar = st.button("➕ Agregar examen", use_container_width=True)
+# ============================================
+# EJERCICIO 2 - EXÁMENES DE LABORATORIO
+# ============================================
+elif modulos == "📦 Ejercicio 2: Registro con NumPy":
+    st.subheader("🧪 Módulo de Registro de Exámenes de Laboratorio")
+    st.markdown("Registra exámenes de laboratorio usando **arrays de NumPy** y visualízalos como DataFrame.")
 
-with col_btn2:
-    limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
+    # Inicializar arrays
+    for key, dtype in [("arr_paciente", object), ("arr_examen", object), ("arr_categoria", object),
+                       ("arr_resultado", float), ("arr_referencia", float),
+                       ("arr_unidad", object), ("arr_estado", object)]:
+        init_state(key, np.array([], dtype=dtype))
 
-# Acción: Agregar examen a los arrays
-if agregar:
-    if paciente.strip() == "" or resultado <= 0:
-        st.error("⚠️ Por favor, ingresa el nombre del paciente y un resultado válido.")
+    # Datos de exámenes (versión simplificada)
+    examenes = {
+        "Hematología": {"items": ["Hemoglobina", "Hematocrito", "Leucocitos", "Plaquetas"],
+                        "unidades": {"Hemoglobina": "g/dL", "Hematocrito": "%",
+                                     "Leucocitos": "x10^3/µL", "Plaquetas": "x10^3/µL"}},
+        "Química sanguínea": {"items": ["Glucosa en ayunas", "HbA1c", "Creatinina", "Ácido úrico"],
+                              "unidades": {"Glucosa en ayunas": "mg/dL", "HbA1c": "%",
+                                           "Creatinina": "mg/dL", "Ácido úrico": "mg/dL"}},
+        "Perfil lipídico": {"items": ["Colesterol total", "HDL", "LDL", "Triglicéridos"],
+                            "unidades": {k: "mg/dL" for k in ["Colesterol total", "HDL", "LDL", "Triglicéridos"]}},
+        "Función hepática": {"items": ["AST (TGO)", "ALT (TGP)", "Bilirrubina total", "Albúmina"],
+                             "unidades": {"AST (TGO)": "U/L", "ALT (TGP)": "U/L",
+                                          "Bilirrubina total": "mg/dL", "Albúmina": "g/dL"}}
+    }
+
+    st.markdown("### Registrar nuevo examen")
+    c1, c2 = st.columns(2)
+    with c1:
+        paciente = st.text_input("👤 Paciente", key="ej2_paciente", placeholder="Ej: Juan Pérez")
+        categoria = st.selectbox("📋 Categoría", list(examenes.keys()), key="ej2_categoria")
+    with c2:
+        examen_opts = examenes[categoria]["items"]
+        examen = st.selectbox("🔬 Examen", examen_opts, key="ej2_examen")
+        unidad = st.text_input("📏 Unidad", value=examenes[categoria]["unidades"][examen], key="ej2_unidad")
+
+    c3, c4 = st.columns(2)
+    with c3:
+        resultado = st.number_input("📊 Resultado", min_value=0.0, step=0.01, format="%.2f", key="ej2_resultado")
+    with c4:
+        referencia = st.number_input("📐 Valor de referencia", min_value=0.0, step=0.01, format="%.2f", key="ej2_referencia")
+
+    # Estado automático
+    if referencia > 0:
+        estado = "Normal" if resultado <= referencia else "Alterado"
+        icono = "🟢" if estado == "Normal" else "🔴"
+        st.info(f"💡 Estado: **{icono} {estado}**")
     else:
-        # Agregar valores a cada array de NumPy
-        st.session_state.arr_paciente = np.append(st.session_state.arr_paciente, paciente.strip())
-        st.session_state.arr_examen = np.append(st.session_state.arr_examen, examen)
-        st.session_state.arr_categoria = np.append(st.session_state.arr_categoria, categoria)
-        st.session_state.arr_resultado = np.append(st.session_state.arr_resultado, resultado)
-        st.session_state.arr_referencia = np.append(st.session_state.arr_referencia, referencia)
-        st.session_state.arr_unidad = np.append(st.session_state.arr_unidad, unidad)
-        st.session_state.arr_estado = np.append(st.session_state.arr_estado, estado)
+        estado = "Sin evaluar"
 
-        st.success(f"✅ Examen '{examen}' del paciente '{paciente}' registrado correctamente.")
+    c_btn1, c_btn2 = st.columns(2)
+    with c_btn1:
+        agregar = st.button("➕ Agregar examen", use_container_width=True)
+    with c_btn2:
+        limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
 
-# Acción: Limpiar campos
-if limpiar:
-    st.session_state.lab_paciente = ""
-    st.session_state.lab_examen = "Glucosa en ayunas"
-    st.session_state.lab_categoria = "Química sanguínea"
-    st.session_state.lab_resultado = 0.0
-    st.session_state.lab_referencia = 0.0
-    st.session_state.lab_unidad = "mg/dL"
-    st.info("🧹 Campos limpiados. Puedes ingresar un nuevo examen.")
-    st.rerun()
+    if agregar:
+        if paciente.strip() == "" or resultado <= 0:
+            st.error("⚠️ Ingresa paciente y resultado válido.")
+        else:
+            st.session_state.arr_paciente = np.append(st.session_state.arr_paciente, paciente.strip())
+            st.session_state.arr_examen = np.append(st.session_state.arr_examen, examen)
+            st.session_state.arr_categoria = np.append(st.session_state.arr_categoria, categoria)
+            st.session_state.arr_resultado = np.append(st.session_state.arr_resultado, resultado)
+            st.session_state.arr_referencia = np.append(st.session_state.arr_referencia, referencia)
+            st.session_state.arr_unidad = np.append(st.session_state.arr_unidad, unidad)
+            st.session_state.arr_estado = np.append(st.session_state.arr_estado, estado)
+            st.success(f"✅ Examen '{examen}' registrado.")
 
-# ----------------------------------------------------
-# Mostrar DataFrame construido desde los arrays
-# ----------------------------------------------------
-st.markdown("### Tabla de exámenes registrados (DataFrame)")
+    if limpiar:
+        st.rerun()
 
-if len(st.session_state.arr_paciente) > 0:
-    # Construir DataFrame desde los arrays de NumPy
-    df_examenes = pd.DataFrame({
-        "Paciente": st.session_state.arr_paciente,
-        "Examen": st.session_state.arr_examen,
-        "Categoría": st.session_state.arr_categoria,
-        "Resultado": st.session_state.arr_resultado,
-        "Referencia": st.session_state.arr_referencia,
-        "Unidad": st.session_state.arr_unidad,
-        "Estado": st.session_state.arr_estado
-    })
+    st.markdown("### Tabla de exámenes (DataFrame)")
+    if len(st.session_state.arr_paciente) > 0:
+        df = pd.DataFrame({
+            "Paciente": st.session_state.arr_paciente,
+            "Examen": st.session_state.arr_examen,
+            "Categoría": st.session_state.arr_categoria,
+            "Resultado": st.session_state.arr_resultado,
+            "Referencia": st.session_state.arr_referencia,
+            "Unidad": st.session_state.arr_unidad,
+            "Estado": st.session_state.arr_estado
+        })
+        st.dataframe(df, use_container_width=True)
 
-    st.dataframe(df_examenes, use_container_width=True)
+        # Métricas
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.metric("🔬 Exámenes", len(st.session_state.arr_paciente))
+        c2.metric("👥 Pacientes", len(np.unique(st.session_state.arr_paciente)))
+        c3.metric("🟢 Normales", int(np.sum(st.session_state.arr_estado == "Normal")))
+        c4.metric("🔴 Alterados", int(np.sum(st.session_state.arr_estado == "Alterado")))
+        c5.metric("📊 Promedio", f"{np.mean(st.session_state.arr_resultado):.2f}")
 
-    # ----------------------------------------------------
-    # Métricas y análisis con NumPy
-    # ----------------------------------------------------
-    st.markdown("### Resumen del laboratorio")
+        # Análisis por categoría
+        st.markdown("### Análisis por categoría")
+        for cat in np.unique(st.session_state.arr_categoria):
+            mask = st.session_state.arr_categoria == cat
+            st.write(f"- **{cat}**: {int(np.sum(mask))} exámenes | "
+                     f"Alterados: {int(np.sum((mask) & (st.session_state.arr_estado == 'Alterado')))} | "
+                     f"Promedio: {np.mean(st.session_state.arr_resultado[mask]):.2f}")
 
-    total_examenes = len(st.session_state.arr_paciente)
-    examenes_normales = int(np.sum(st.session_state.arr_estado == "Normal"))
-    examenes_alterados = int(np.sum(st.session_state.arr_estado == "Alterado"))
-    pacientes_unicos = len(np.unique(st.session_state.arr_paciente))
-    promedio_resultados = float(np.mean(st.session_state.arr_resultado))
+        # Análisis por paciente
+        st.markdown("### Análisis por paciente")
+        for pac in np.unique(st.session_state.arr_paciente):
+            mask = st.session_state.arr_paciente == pac
+            st.write(f"- **{pac}**: {int(np.sum(mask))} exámenes | "
+                     f"Alterados: {int(np.sum((mask) & (st.session_state.arr_estado == 'Alterado')))}")
+    else:
+        st.info("ℹ️ No hay exámenes registrados.")
 
-    col_m1, col_m2, col_m3, col_m4, col_m5 = st.columns(5)
+    if st.button("🗑️ Reiniciar registros"):
+        for key in ["arr_paciente", "arr_examen", "arr_categoria", "arr_unidad", "arr_estado"]:
+            st.session_state[key] = np.array([], dtype=object)
+        for key in ["arr_resultado", "arr_referencia"]:
+            st.session_state[key] = np.array([], dtype=float)
+        st.rerun()
 
-    with col_m1:
-        st.metric("🔬 Exámenes registrados", total_examenes)
+# ============================================
+# EJERCICIOS 3 Y 4 (PENDIENTES)
+# ============================================
+elif modulos == "🔧 Ejercicio 3: Funciones externas":
+    st.subheader("🔧 Módulo de Funciones desde Librería Externa")
+    st.info("ℹ️ Próximamente: Requiere revisar `libreria_funciones_proyecto1.py`")
 
-    with col_m2:
-        st.metric("👥 Pacientes únicos", pacientes_unicos)
-
-    with col_m3:
-        st.metric("🟢 Resultados normales", examenes_normales)
-
-    with col_m4:
-        st.metric("🔴 Resultados alterados", examenes_alterados)
-
-    with col_m5:
-        st.metric("📊 Promedio resultados", f"{promedio_resultados:.2f}")
-
-    # Análisis por categoría usando NumPy
-    st.markdown("### Análisis por categoría de examen")
-    categorias_unicas = np.unique(st.session_state.arr_categoria)
-
-    for cat in categorias_unicas:
-        mask = st.session_state.arr_categoria == cat
-        cantidad_cat = int(np.sum(mask))
-        alterados_cat = int(np.sum(
-            (st.session_state.arr_categoria == cat) & (st.session_state.arr_estado == "Alterado")
-        ))
-        promedio_cat = float(np.mean(st.session_state.arr_resultado[mask]))
-        st.write(f"- **{cat}**: {cantidad_cat} exámenes | Alterados: {alterados_cat} | Promedio: {promedio_cat:.2f}")
-
-    # Análisis por paciente
-    st.markdown("### Análisis por paciente")
-    pacientes_unicos_lista = np.unique(st.session_state.arr_paciente)
-
-    for pac in pacientes_unicos_lista:
-        mask_pac = st.session_state.arr_paciente == pac
-        examenes_pac = int(np.sum(mask_pac))
-        alterados_pac = int(np.sum(
-            (st.session_state.arr_paciente == pac) & (st.session_state.arr_estado == "Alterado")
-        ))
-        st.write(f"- **{pac}**: {examenes_pac} exámenes | Alterados: {alterados_pac}")
-
-else:
-    st.info("ℹ️ Aún no has registrado exámenes. Comienza agregando uno arriba.")
-
-# Botón para reiniciar todo
-if st.button("🗑️ Reiniciar registros de laboratorio"):
-    st.session_state.arr_paciente = np.array([], dtype=object)
-    st.session_state.arr_examen = np.array([], dtype=object)
-    st.session_state.arr_categoria = np.array([], dtype=object)
-    st.session_state.arr_resultado = np.array([], dtype=float)
-    st.session_state.arr_referencia = np.array([], dtype=float)
-    st.session_state.arr_unidad = np.array([], dtype=object)
-    st.session_state.arr_estado = np.array([], dtype=object)
-    st.session_state.lab_paciente = ""
-    st.session_state.lab_examen = "Glucosa en ayunas"
-    st.session_state.lab_categoria = "Química sanguínea"
-    st.session_state.lab_resultado = 0.0
-    st.session_state.lab_referencia = 0.0
-    st.session_state.lab_unidad = "mg/dL"
-    st.rerun()  
+elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
+    st.subheader("🗂️ Módulo de Clases y Operaciones CRUD")
+    st.info("ℹ️ Próximamente: Requiere revisar `libreria_clases_proyecto1.py`")

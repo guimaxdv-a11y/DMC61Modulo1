@@ -26,11 +26,10 @@ st.sidebar.subheader("📋 Menú de Ejercicios")
 
 if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
     st.session_state.modulo_seleccionado = "🏠 Home"
-    st.rerun()
+
 modulos = st.sidebar.selectbox(
     "Seleccione un módulo", opciones_menu,
     key="modulo_seleccionado",
-    index=opciones_menu.index(st.session_state.modulo_seleccionado)
 )
 # ============================================
 # HOME
@@ -43,7 +42,7 @@ if modulos == "🏠 Home":
     st.subheader("Médico Neurólogo - Hospital Regional de Loreto")
     st.subheader("2026")
     st.markdown("---")
-   
+    st.markdown("""
     ### 📝 Descripción del Proyecto
     Aplicación interactiva que integra los conceptos fundamentales del Módulo 1:
     variables, estructuras de datos, control de flujo, funciones, POO y Streamlit con apoyo de IA

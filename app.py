@@ -308,7 +308,7 @@ elif modulos == "📦 Ejercicio 2: Registro de Laboratorio con NumPy":
             st.success(f"✅ Examen '{examen}' registrado.")
 
     # ------------------------------------------------------------
-    # PASO 8: Lógica del botón "Limpiar" (CORREGIDO)
+    # PASO 8: Lógica del botón "Limpiar" 
     # ------------------------------------------------------------
     if limpiar:
         # Resetear las claves de los widgets

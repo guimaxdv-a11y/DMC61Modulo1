@@ -375,15 +375,82 @@ elif modulos == "📦 Ejercicio 2: Registro de Laboratorio con NumPy":
         st.session_state.ej2_examen = "Hemoglobina"
         st.session_state.ej2_resultado = 0.0
         st.session_state.ej2_referencia = 0.0
-        # No se necesita st.rerun()
+       
 
 # ============================================
-# EJERCICIOS 3 Y 4 (PENDIENTES)
+# EJERCICIOS 3 
 # ============================================
 elif modulos == "🔧 Ejercicio 3: Funciones externas":
-    st.subheader("🔧 Módulo de Funciones desde Librería Externa")
-    st.info("ℹ️ Próximamente: Requiere revisar `libreria_funciones_proyecto1.py`")
+    st.subheader("🧬 Cálculo de IMC y Superficie Corporal")
+    st.markdown("Usa funciones de `libreria_funciones_proyecto1.py` para calcular IMC, clasificación y superficie corporal (Mosteller).")
 
+    # Inicialización
+    init_state("historial_imc", [])
+    init_state("ej3_peso", 70.0)
+    init_state("ej3_altura", 1.75)
+
+    # Formulario
+    st.markdown("### Ingresa tus datos")
+    c1, c2 = st.columns(2)
+    with c1:
+        peso = st.number_input("⚖️ Peso (kg)", min_value=1.0, max_value=300.0, step=0.5, format="%.1f", key="ej3_peso")
+    with c2:
+        altura = st.number_input("📏 Altura (m)", min_value=0.50, max_value=2.50, step=0.01, format="%.2f", key="ej3_altura")
+
+    # Botones
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        calcular = st.button("🧮 Calcular", use_container_width=True)
+    with col2:
+        limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
+    with col3:
+        reiniciar = st.button("🗑️ Reiniciar historial", use_container_width=True)
+
+    # Lógica
+    if calcular:
+        try:
+            from libreria_funciones_proyecto1 import calcular_imc, calcular_superficie_corporal
+            imc = calcular_imc(peso, altura)
+            sc = calcular_superficie_corporal(peso, altura * 100)
+            st.session_state.historial_imc.append({
+                "Peso (kg)": peso,
+                "Altura (m)": altura,
+                "IMC": imc["imc"],
+                "Clasificación": imc["clasificacion"],
+                "Superficie Corporal (m²)": sc["superficie_corporal_m2"]
+            })
+            st.success("✅ Cálculo guardado.")
+        except Exception as e:
+            st.error(f"⚠️ Error: {e}")
+
+    if limpiar:
+        st.session_state.ej3_peso = 70.0
+        st.session_state.ej3_altura = 1.75
+
+    if reiniciar:
+        st.session_state.historial_imc = []
+
+    # Mostrar historial y estadísticas
+    if st.session_state.historial_imc:
+        df = pd.DataFrame(st.session_state.historial_imc)
+        st.markdown("### 📋 Historial de cálculos")
+        st.dataframe(df, use_container_width=True)
+
+        st.markdown("#### 📈 Resumen")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Promedio IMC", f"{df['IMC'].mean():.2f}")
+        c2.metric("Mínimo IMC", f"{df['IMC'].min():.2f}")
+        c3.metric("Máximo IMC", f"{df['IMC'].max():.2f}")
+
+        st.markdown("#### 🧾 Distribución por clasificación")
+        conteo = df["Clasificación"].value_counts().reset_index()
+        conteo.columns = ["Clasificación", "Cantidad"]
+        st.dataframe(conteo, use_container_width=True)
+    else:
+        st.info("ℹ️ No hay cálculos registrados. Presiona 'Calcular' para empezar.")
+# ============================================
+# EJERCICIOS 4
+# ============================================
 elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
     st.subheader("🗂️ Módulo de Clases y Operaciones CRUD")
     st.info("ℹ️ Próximamente: Requiere revisar `libreria_clases_proyecto1.py`")

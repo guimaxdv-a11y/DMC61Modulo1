@@ -176,42 +176,93 @@ elif modulos == "📊 Ejercicio 1: Flujo de caja":
         st.session_state.ej1_valor = 0.0
         # No se necesita st.rerun()
 # ============================================
-# EJERCICIO 2 - EXÁMENES DE LABORATORIO
+# EJERCICIO 2 - EXÁMENES DE LABORATORIO 
 # ============================================
-elif modulos == "📦 Ejercicio 2: Registro con NumPy":
+elif modulos == "📦 Ejercicio 2: Registro de Laboratorio con NumPy":
+    # ------------------------------------------------------------
+    # PASO 1: Encabezado del módulo
+    # ------------------------------------------------------------
     st.subheader("🧪 Módulo de Registro de Exámenes de Laboratorio")
     st.markdown("Registra exámenes de laboratorio usando **arrays de NumPy** y visualízalos como DataFrame.")
 
-    # Inicializar arrays
-    for key, dtype in [("arr_paciente", object), ("arr_examen", object), ("arr_categoria", object),
-                       ("arr_resultado", float), ("arr_referencia", float),
-                       ("arr_unidad", object), ("arr_estado", object)]:
+    # ------------------------------------------------------------
+    # PASO 2: Inicialización de arrays (con NumPy) y claves de widgets
+    # ------------------------------------------------------------
+    # Arrays para almacenar datos
+    for key, dtype in [
+        ("arr_paciente", object),
+        ("arr_examen", object),
+        ("arr_categoria", object),
+        ("arr_resultado", float),
+        ("arr_referencia", float),
+        ("arr_unidad", object),
+        ("arr_estado", object)
+    ]:
         init_state(key, np.array([], dtype=dtype))
 
-    # Datos de exámenes (versión simplificada)
+    # Claves de los widgets (para que se puedan resetear)
+    for key, default in [
+        ("ej2_paciente", ""),
+        ("ej2_categoria", "Hematología"),
+        ("ej2_examen", "Hemoglobina"),
+        ("ej2_unidad", ""),      # Se usará solo como respaldo, pero se actualiza dinámicamente
+        ("ej2_resultado", 0.0),
+        ("ej2_referencia", 0.0)
+    ]:
+        init_state(key, default)
+
+    # ------------------------------------------------------------
+    # PASO 3: Datos de exámenes (diccionario)
+    # ------------------------------------------------------------
     examenes = {
-        "Hematología": {"items": ["Hemoglobina", "Hematocrito", "Leucocitos", "Plaquetas"],
-                        "unidades": {"Hemoglobina": "g/dL", "Hematocrito": "%",
-                                     "Leucocitos": "x10^3/µL", "Plaquetas": "x10^3/µL"}},
-        "Química sanguínea": {"items": ["Glucosa en ayunas", "HbA1c", "Creatinina", "Ácido úrico"],
-                              "unidades": {"Glucosa en ayunas": "mg/dL", "HbA1c": "%",
-                                           "Creatinina": "mg/dL", "Ácido úrico": "mg/dL"}},
-        "Perfil lipídico": {"items": ["Colesterol total", "HDL", "LDL", "Triglicéridos"],
-                            "unidades": {k: "mg/dL" for k in ["Colesterol total", "HDL", "LDL", "Triglicéridos"]}},
-        "Función hepática": {"items": ["AST (TGO)", "ALT (TGP)", "Bilirrubina total", "Albúmina"],
-                             "unidades": {"AST (TGO)": "U/L", "ALT (TGP)": "U/L",
-                                          "Bilirrubina total": "mg/dL", "Albúmina": "g/dL"}}
+        "Hematología": {
+            "items": ["Hemoglobina", "Hematocrito", "Leucocitos", "Plaquetas"],
+            "unidades": {
+                "Hemoglobina": "g/dL",
+                "Hematocrito": "%",
+                "Leucocitos": "x10^3/µL",
+                "Plaquetas": "x10^3/µL"
+            }
+        },
+        "Química sanguínea": {
+            "items": ["Glucosa en ayunas", "HbA1c", "Creatinina", "Ácido úrico"],
+            "unidades": {
+                "Glucosa en ayunas": "mg/dL",
+                "HbA1c": "%",
+                "Creatinina": "mg/dL",
+                "Ácido úrico": "mg/dL"
+            }
+        },
+        "Perfil lipídico": {
+            "items": ["Colesterol total", "HDL", "LDL", "Triglicéridos"],
+            "unidades": {k: "mg/dL" for k in ["Colesterol total", "HDL", "LDL", "Triglicéridos"]}
+        },
+        "Función hepática": {
+            "items": ["AST (TGO)", "ALT (TGP)", "Bilirrubina total", "Albúmina"],
+            "unidades": {
+                "AST (TGO)": "U/L",
+                "ALT (TGP)": "U/L",
+                "Bilirrubina total": "mg/dL",
+                "Albúmina": "g/dL"
+            }
+        }
     }
 
+    # ------------------------------------------------------------
+    # PASO 4: Formulario de entrada (dos filas de 2 columnas)
+    # ------------------------------------------------------------
     st.markdown("### Registrar nuevo examen")
     c1, c2 = st.columns(2)
     with c1:
         paciente = st.text_input("👤 Paciente", key="ej2_paciente", placeholder="Ej: Juan Pérez")
         categoria = st.selectbox("📋 Categoría", list(examenes.keys()), key="ej2_categoria")
     with c2:
+        # El examen se actualiza según la categoría seleccionada
         examen_opts = examenes[categoria]["items"]
         examen = st.selectbox("🔬 Examen", examen_opts, key="ej2_examen")
-        unidad = st.text_input("📏 Unidad", value=examenes[categoria]["unidades"][examen], key="ej2_unidad")
+        # Unidad: se calcula dinámicamente y no tiene key para evitar conflictos
+        unidad = examenes[categoria]["unidades"][examen]
+        st.text_input("📏 Unidad", value=unidad, disabled=True)  # Solo lectura
 
     c3, c4 = st.columns(2)
     with c3:
@@ -219,24 +270,34 @@ elif modulos == "📦 Ejercicio 2: Registro con NumPy":
     with c4:
         referencia = st.number_input("📐 Valor de referencia", min_value=0.0, step=0.01, format="%.2f", key="ej2_referencia")
 
-    # Estado automático
+    # ------------------------------------------------------------
+    # PASO 5: Estado automático (según resultado y referencia)
+    # ------------------------------------------------------------
     if referencia > 0:
         estado = "Normal" if resultado <= referencia else "Alterado"
         icono = "🟢" if estado == "Normal" else "🔴"
         st.info(f"💡 Estado: **{icono} {estado}**")
     else:
         estado = "Sin evaluar"
+        st.warning("⚠️ Ingresa un valor de referencia para evaluar el estado.")
 
+    # ------------------------------------------------------------
+    # PASO 6: Botones de acción (Agregar y Limpiar)
+    # ------------------------------------------------------------
     c_btn1, c_btn2 = st.columns(2)
     with c_btn1:
         agregar = st.button("➕ Agregar examen", use_container_width=True)
     with c_btn2:
         limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
 
+    # ------------------------------------------------------------
+    # PASO 7: Lógica del botón "Agregar"
+    # ------------------------------------------------------------
     if agregar:
         if paciente.strip() == "" or resultado <= 0:
             st.error("⚠️ Ingresa paciente y resultado válido.")
         else:
+            # Actualizar arrays usando np.append
             st.session_state.arr_paciente = np.append(st.session_state.arr_paciente, paciente.strip())
             st.session_state.arr_examen = np.append(st.session_state.arr_examen, examen)
             st.session_state.arr_categoria = np.append(st.session_state.arr_categoria, categoria)
@@ -246,9 +307,22 @@ elif modulos == "📦 Ejercicio 2: Registro con NumPy":
             st.session_state.arr_estado = np.append(st.session_state.arr_estado, estado)
             st.success(f"✅ Examen '{examen}' registrado.")
 
+    # ------------------------------------------------------------
+    # PASO 8: Lógica del botón "Limpiar" (CORREGIDO)
+    # ------------------------------------------------------------
     if limpiar:
-        st.rerun()
+        # Resetear las claves de los widgets
+        st.session_state.ej2_paciente = ""
+        st.session_state.ej2_categoria = "Hematología"
+        st.session_state.ej2_examen = "Hemoglobina"
+        st.session_state.ej2_resultado = 0.0
+        st.session_state.ej2_referencia = 0.0
+        # Nota: la unidad no tiene key, se recalcula automáticamente
+        # No se necesita st.rerun()
 
+    # ------------------------------------------------------------
+    # PASO 9: Visualización de la tabla y estadísticas
+    # ------------------------------------------------------------
     st.markdown("### Tabla de exámenes (DataFrame)")
     if len(st.session_state.arr_paciente) > 0:
         df = pd.DataFrame({
@@ -262,7 +336,7 @@ elif modulos == "📦 Ejercicio 2: Registro con NumPy":
         })
         st.dataframe(df, use_container_width=True)
 
-        # Métricas
+        # Métricas en 5 columnas
         c1, c2, c3, c4, c5 = st.columns(5)
         c1.metric("🔬 Exámenes", len(st.session_state.arr_paciente))
         c2.metric("👥 Pacientes", len(np.unique(st.session_state.arr_paciente)))
@@ -287,12 +361,22 @@ elif modulos == "📦 Ejercicio 2: Registro con NumPy":
     else:
         st.info("ℹ️ No hay exámenes registrados.")
 
+    # ------------------------------------------------------------
+    # PASO 10: Botón "Reiniciar registros" (CORREGIDO)
+    # ------------------------------------------------------------
     if st.button("🗑️ Reiniciar registros"):
+        # Resetear arrays
         for key in ["arr_paciente", "arr_examen", "arr_categoria", "arr_unidad", "arr_estado"]:
             st.session_state[key] = np.array([], dtype=object)
         for key in ["arr_resultado", "arr_referencia"]:
             st.session_state[key] = np.array([], dtype=float)
-        st.rerun()
+        # Resetear también los widgets
+        st.session_state.ej2_paciente = ""
+        st.session_state.ej2_categoria = "Hematología"
+        st.session_state.ej2_examen = "Hemoglobina"
+        st.session_state.ej2_resultado = 0.0
+        st.session_state.ej2_referencia = 0.0
+        # No se necesita st.rerun()
 
 # ============================================
 # EJERCICIOS 3 Y 4 (PENDIENTES)

@@ -5,7 +5,6 @@ import pandas as pd
 # ============================================
 # IMPORTACIONES SEGURAS DE LIBRERÍAS EXTERNAS
 # ============================================
-# Esto evita que la app se rompa si los archivos aún no existen
 try:
     from libreria_funciones_proyecto1 import calcular_imc, calcular_superficie_corporal
 except ImportError:
@@ -22,12 +21,10 @@ except ImportError:
 # ============================================
 st.set_page_config(page_title="Python for Analytics - Proyecto 1", page_icon="🧠", layout="wide")
 
-# Función auxiliar para inicializar session_state
 def init_state(key, default):
     if key not in st.session_state:
         st.session_state[key] = default
 
-# Inicializar selección del módulo (HOME por defecto)
 init_state("modulo_seleccionado", "🏠 Home")
 
 opciones_menu = [
@@ -47,7 +44,7 @@ st.sidebar.markdown("---")
 
 if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
     st.session_state.modulo_seleccionado = "🏠 Home"
-    st.rerun()  # <-- CORREGIDO: Forzar recarga inmediata
+    st.rerun()
 
 st.sidebar.markdown("---")
 
@@ -72,7 +69,7 @@ if modulos == "🏠 Home":
     st.markdown("""
     ### 📝 Descripción del Proyecto
     Aplicación interactiva que integra los conceptos fundamentales del Módulo 1:
-    variables, estructuras de datos, control de_flow, funciones, POO y Streamlit con apoyo de IA.
+    variables, estructuras de datos, control de flujo, funciones, POO y Streamlit con apoyo de IA.
 
     ### 🛠️ Tecnologías utilizadas
     - **Python 3.x** | **Streamlit** | **NumPy** | **Pandas**
@@ -122,7 +119,7 @@ elif modulos == "📊 Ejercicio 1: Flujo de caja":
         st.session_state.ej1_concepto = ""
         st.session_state.ej1_tipo = "Ingreso"
         st.session_state.ej1_valor = 0.0
-        st.rerun()  # <-- CORREGIDO
+        st.rerun()
 
     st.markdown("### Historial de movimientos")
     if st.session_state.movimientos:
@@ -152,7 +149,7 @@ elif modulos == "📊 Ejercicio 1: Flujo de caja":
         st.session_state.ej1_concepto = ""
         st.session_state.ej1_tipo = "Ingreso"
         st.session_state.ej1_valor = 0.0
-        st.rerun()  # <-- CORREGIDO
+        st.rerun()
 
 # ============================================
 # EJERCICIO 2 - EXÁMENES DE LABORATORIO 
@@ -230,7 +227,7 @@ elif modulos == "📦 Ejercicio 2: Registro de Laboratorio con NumPy":
         st.session_state.ej2_examen = "Hemoglobina"
         st.session_state.ej2_resultado = 0.0
         st.session_state.ej2_referencia = 0.0
-        st.rerun()  # <-- CORREGIDO
+        st.rerun()
 
     st.markdown("### Tabla de exámenes (DataFrame)")
     if len(st.session_state.arr_paciente) > 0:
@@ -274,7 +271,7 @@ elif modulos == "📦 Ejercicio 2: Registro de Laboratorio con NumPy":
         st.session_state.ej2_examen = "Hemoglobina"
         st.session_state.ej2_resultado = 0.0
         st.session_state.ej2_referencia = 0.0
-        st.rerun()  # <-- CORREGIDO
+        st.rerun()
 
 # ============================================
 # EJERCICIO 3 - FUNCIONES EXTERNAS
@@ -415,7 +412,10 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
                 ok, msg = agregar_paciente(nombre.strip(), peso, altura)
                 if ok:
                     st.success(msg)
-                    st.session_state.ej4_nombre, st.session_state.ej4_peso, st.session_state.ej4_altura = "", 70.0, 1.75
+                    # CORREGIDO: Asignaciones individuales en lugar de tuple unpacking
+                    st.session_state.ej4_nombre = ""
+                    st.session_state.ej4_peso = 70.0
+                    st.session_state.ej4_altura = 1.75
                     st.session_state.ej4_edit_index = None
                     st.rerun()
                 else:
@@ -431,14 +431,20 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
                 ok, msg = actualizar_paciente(idx, nombre.strip(), peso, altura)
                 if ok:
                     st.success(msg)
-                    st.session_state.ej4_nombre, st.session_state.ej4_peso, st.session_state.ej4_altura = "", 70.0, 1.75
+                    # CORREGIDO: Asignaciones individuales
+                    st.session_state.ej4_nombre = ""
+                    st.session_state.ej4_peso = 70.0
+                    st.session_state.ej4_altura = 1.75
                     st.session_state.ej4_edit_index = None
                     st.rerun()
                 else:
                     st.error(msg)
 
         if limpiar or cancelar:
-            st.session_state.ej4_nombre, st.session_state.ej4_peso, st.session_state.ej4_altura = "", 70.0, 1.75
+            # CORREGIDO: Asignaciones individuales
+            st.session_state.ej4_nombre = ""
+            st.session_state.ej4_peso = 70.0
+            st.session_state.ej4_altura = 1.75
             st.session_state.ej4_edit_index = None
             st.rerun()
 
@@ -478,7 +484,10 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
                         st.success(msg)
                         if st.session_state.ej4_edit_index == id_sel:
                             st.session_state.ej4_edit_index = None
-                            st.session_state.ej4_nombre, st.session_state.ej4_peso, st.session_state.ej4_altura = "", 70.0, 1.75
+                            # CORREGIDO: Asignaciones individuales
+                            st.session_state.ej4_nombre = ""
+                            st.session_state.ej4_peso = 70.0
+                            st.session_state.ej4_altura = 1.75
                         st.rerun()
                     else:
                         st.error(msg)

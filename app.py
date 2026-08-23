@@ -23,9 +23,9 @@ opciones_menu = ["🏠 Home", "📊 Ejercicio 1: Flujo de caja", "📦 Ejercicio
 # ============================================
 st.sidebar.image("Neurolab solo logo.png", use_container_width=True)
 st.sidebar.title("📋 Menú de Ejercicios")
-st.sidebar.markdown("---")
+
 st.sidebar.markdown("**Sistema de asistencia del consultorio**")
-st.sidebar.markdown("---")
+
 modulos = st.sidebar.selectbox(
     "Seleccione un módulo", opciones_menu,
     key="modulo_seleccionado",
@@ -35,9 +35,6 @@ modulos = st.sidebar.selectbox(
 if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
     st.session_state.modulo_seleccionado = "🏠 Home"
     st.rerun()
-
-st.sidebar.markdown("---")
-
 
 # ============================================
 # HOME

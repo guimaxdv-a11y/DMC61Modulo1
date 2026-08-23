@@ -15,7 +15,7 @@ def init_state(key, default):
 # Inicializar selección del módulo (HOME por defecto)
 init_state("modulo_seleccionado", "🏠 Home")
 
-opciones_menu = ["🏠 Home", "📊 Ejercicio 1: Flujo de caja", "📦 Ejercicio 2: Registro con NumPy",
+opciones_menu = ["🏠 Home", "📊 Ejercicio 1: Flujo de caja", "📦 Ejercicio 2: Registro de Laboratorio con NumPy",
                  "🔧 Ejercicio 3: Funciones externas", "🗂️ Ejercicio 4: Clases y CRUD"]
 
 # ============================================

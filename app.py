@@ -38,8 +38,8 @@ modulos = st.sidebar.selectbox(
 if modulos == "🏠 Home":
     st.title("Desarrollo del aprendizaje en Python for Analytics")
     st.subheader("Módulo 1 – Python Fundamentals")
-    st.markdown("**Sistema de asistencia del consultorio**")
-    st.header("Elaborado por: Guillermo Donayre Vásquez")
+    st.title("**Sistema de asistencia del consultorio**")
+    st.subheader("Elaborado por: Guillermo Donayre Vásquez")
     st.subheader("Médico Neurólogo - Hospital Regional de Loreto")
     st.subheader("2026")
     st.markdown("---")

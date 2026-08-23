@@ -7,7 +7,7 @@ import pandas as pd
 # ============================================
 st.set_page_config(page_title="Python for Analytics - Proyecto 1", page_icon="🧠", layout="wide")
 
-# Función auxiliar para inicializar session_state
+# Función  para inicializar session_state
 def init_state(key, default):
     if key not in st.session_state:
         st.session_state[key] = default
@@ -43,7 +43,7 @@ if modulos == "🏠 Home":
     st.subheader("Médico Neurólogo - Hospital Regional de Loreto")
     st.subheader("2026")
     st.markdown("---")
-    st.markdown("""
+   
     ### 📝 Descripción del Proyecto
     Aplicación interactiva que integra los conceptos fundamentales del Módulo 1:
     variables, estructuras de datos, control de flujo, funciones, POO y Streamlit con apoyo de IA

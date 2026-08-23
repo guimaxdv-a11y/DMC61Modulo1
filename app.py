@@ -26,6 +26,11 @@ st.sidebar.title("📋 Menú de Ejercicios")
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Sistema de asistencia del consultorio**")
 st.sidebar.markdown("---")
+modulos = st.sidebar.selectbox(
+    "Seleccione un módulo", opciones_menu,
+    key="modulo_seleccionado",
+    index=opciones_menu.index(st.session_state.modulo_seleccionado)
+)
 
 if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
     st.session_state.modulo_seleccionado = "🏠 Home"
@@ -33,11 +38,6 @@ if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
 
 st.sidebar.markdown("---")
 
-modulos = st.sidebar.selectbox(
-    "Seleccione un módulo", opciones_menu,
-    key="modulo_seleccionado",
-    index=opciones_menu.index(st.session_state.modulo_seleccionado)
-)
 
 # ============================================
 # HOME

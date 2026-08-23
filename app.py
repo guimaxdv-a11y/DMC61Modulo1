@@ -49,7 +49,7 @@ if modulos == "🏠 Home":
     variables, estructuras de datos, control de flujo, funciones, POO y Streamlit con apoyo de IA
 
     ### 🛠️ Tecnologías utilizadas
-    - **Python 3.x** | **Streamlit** | **NumPy** | **Pandas**
+    - **Python 3.14.6** | **Streamlit** | **NumPy** | **Pandas**
 
     ### 📋 Estructura
     1. **📊 Ejercicio 1**: Flujo de caja con listas

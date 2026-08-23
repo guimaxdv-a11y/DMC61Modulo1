@@ -463,48 +463,48 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
     """)
 
     # ------------------------------------------------------------
-    # PASO 1: Inicialización del estado
+    # PASO 1: Inicialización del estado (SIEMPRE al inicio)
     # ------------------------------------------------------------
-    init_state("pacientes", [])  # Lista de objetos Paciente
+    init_state("pacientes", [])           # Lista de objetos Paciente
     init_state("ej4_nombre", "")
     init_state("ej4_peso", 70.0)
     init_state("ej4_altura", 1.75)
-    init_state("ej4_edit_index", None)  # Índice del paciente en edición
+    init_state("ej4_edit_index", None)    # Índice del paciente en edición
 
     # ------------------------------------------------------------
-    # PASO 2: Funciones auxiliares (CRUD)
+    # PASO 2: Importar la clase (después de la inicialización)
     # ------------------------------------------------------------
     from libreria_clases_proyecto1 import Paciente
 
+    # ------------------------------------------------------------
+    # PASO 3: Funciones CRUD (usando las claves ya inicializadas)
+    # ------------------------------------------------------------
     def agregar_paciente(nombre, peso, altura):
-        """Crear un nuevo paciente y agregarlo a la lista."""
         try:
             paciente = Paciente(nombre, peso, altura)
             st.session_state.pacientes.append(paciente)
-            return True, "✅ Paciente agregado correctamente."
+            return True, "✅ Paciente agregado."
         except Exception as e:
-            return False, f"⚠️ Error: {e}"
+            return False, f"⚠️ {e}"
 
     def actualizar_paciente(index, nombre, peso, altura):
-        """Actualizar los datos de un paciente existente."""
         try:
             paciente = Paciente(nombre, peso, altura)
             st.session_state.pacientes[index] = paciente
-            return True, "✅ Paciente actualizado correctamente."
+            return True, "✅ Paciente actualizado."
         except Exception as e:
-            return False, f"⚠️ Error: {e}"
+            return False, f"⚠️ {e}"
 
     def eliminar_paciente(index):
-        """Eliminar un paciente por su índice."""
         if 0 <= index < len(st.session_state.pacientes):
             del st.session_state.pacientes[index]
             return True, "🗑️ Paciente eliminado."
         return False, "⚠️ Índice no válido."
 
     # ------------------------------------------------------------
-    # PASO 3: Interfaz - Formulario de creación/actualización
+    # PASO 4: Formulario de entrada
     # ------------------------------------------------------------
-    st.markdown("### 📝 Registrar o actualizar paciente")
+    st.markdown("### 📝 Datos del paciente")
     c1, c2, c3 = st.columns(3)
     with c1:
         nombre = st.text_input("👤 Nombre", key="ej4_nombre", placeholder="Ej: Juan Pérez")
@@ -514,20 +514,22 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
         altura = st.number_input("📏 Altura (m)", min_value=0.50, max_value=2.50, step=0.01, format="%.2f", key="ej4_altura")
 
     # Botones
-    col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
-    with col_btn1:
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
         crear = st.button("➕ Crear", use_container_width=True)
-    with col_btn2:
+    with col2:
         actualizar = st.button("🔄 Actualizar", use_container_width=True)
-    with col_btn3:
-        limpiar = st.button("🧹 Limpiar campos", use_container_width=True)
-    with col_btn4:
-        cancelar_edicion = st.button("❌ Cancelar edición", use_container_width=True)
+    with col3:
+        limpiar = st.button("🧹 Limpiar", use_container_width=True)
+    with col4:
+        cancelar = st.button("❌ Cancelar edición", use_container_width=True)
 
-    # Lógica de botones
+    # ------------------------------------------------------------
+    # PASO 5: Lógica de botones
+    # ------------------------------------------------------------
     if crear:
-        if nombre.strip() == "":
-            st.warning("⚠️ El nombre no puede estar vacío.")
+        if not nombre.strip():
+            st.warning("⚠️ El nombre es obligatorio.")
         else:
             ok, msg = agregar_paciente(nombre.strip(), peso, altura)
             if ok:
@@ -541,13 +543,13 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
                 st.error(msg)
 
     if actualizar:
-        index = st.session_state.ej4_edit_index
-        if index is None:
-            st.warning("⚠️ Selecciona un paciente para actualizar (usa el botón ✏️ en la tabla).")
-        elif nombre.strip() == "":
-            st.warning("⚠️ El nombre no puede estar vacío.")
+        idx = st.session_state.ej4_edit_index
+        if idx is None:
+            st.warning("⚠️ Selecciona un paciente de la tabla (botón ✏️).")
+        elif not nombre.strip():
+            st.warning("⚠️ El nombre es obligatorio.")
         else:
-            ok, msg = actualizar_paciente(index, nombre.strip(), peso, altura)
+            ok, msg = actualizar_paciente(idx, nombre.strip(), peso, altura)
             if ok:
                 st.success(msg)
                 st.session_state.ej4_nombre = ""
@@ -563,93 +565,85 @@ elif modulos == "🗂️ Ejercicio 4: Clases y CRUD":
         st.session_state.ej4_altura = 1.75
         st.session_state.ej4_edit_index = None
 
-    if cancelar_edicion:
+    if cancelar:
         st.session_state.ej4_edit_index = None
         st.session_state.ej4_nombre = ""
         st.session_state.ej4_peso = 70.0
         st.session_state.ej4_altura = 1.75
 
     # ------------------------------------------------------------
-    # PASO 4: Mostrar lista de pacientes con opciones CRUD
+    # PASO 6: Lista de pacientes y acciones CRUD
     # ------------------------------------------------------------
     st.markdown("### 📋 Lista de pacientes")
-
     if not st.session_state.pacientes:
-        st.info("ℹ️ No hay pacientes registrados. Crea uno nuevo.")
+        st.info("ℹ️ No hay pacientes registrados.")
     else:
-        # Construir DataFrame con los datos de todos los pacientes
+        # Construir DataFrame
         data = []
         for i, p in enumerate(st.session_state.pacientes):
-            resumen = p.resumen()
+            r = p.resumen()
             data.append({
                 "ID": i,
-                "Nombre": resumen["paciente"],
+                "Nombre": r["paciente"],
                 "Peso (kg)": p.peso_kg,
                 "Altura (m)": p.altura_m,
-                "IMC": resumen["imc"],
-                "Clasificación": resumen["clasificacion_imc"],
-                "Superficie (m²)": resumen["superficie_corporal_m2"],
-                # Añadir columna para acciones con emojis (no incluida en DataFrame)
+                "IMC": r["imc"],
+                "Clasificación": r["clasificacion_imc"],
+                "Superficie (m²)": r["superficie_corporal_m2"]
             })
-        df_pacientes = pd.DataFrame(data)
+        df = pd.DataFrame(data)
+        st.dataframe(df, use_container_width=True)
 
-        # Mostrar tabla
-        st.dataframe(df_pacientes.drop(columns=["ID", "Superficie (m²)"], errors="ignore"),
-                     use_container_width=True)
-
-        # Selector para elegir paciente a actualizar/eliminar
-        st.markdown("#### 🔧 Acciones sobre paciente")
-        col_accion1, col_accion2 = st.columns(2)
-        with col_accion1:
-            id_seleccionado = st.selectbox(
-                "Selecciona un paciente por ID",
-                options=df_pacientes["ID"].tolist(),
-                format_func=lambda x: f"ID {x}: {df_pacientes[df_pacientes['ID'] == x]['Nombre'].values[0]}"
+        # Acciones: seleccionar paciente
+        st.markdown("#### 🔧 Acciones")
+        col_sel, col_acc = st.columns([2, 1])
+        with col_sel:
+            id_sel = st.selectbox(
+                "Selecciona paciente por ID",
+                options=df["ID"].tolist(),
+                format_func=lambda x: f"ID {x}: {df[df['ID']==x]['Nombre'].values[0]}"
             )
-        with col_accion2:
-            accion = st.radio("Acción", ["✏️ Actualizar", "🗑️ Eliminar"], horizontal=True)
+        with col_acc:
+            accion = st.radio("Acción", ["✏️ Editar", "🗑️ Eliminar"], horizontal=True)
 
-        if st.button("▶️ Ejecutar acción", use_container_width=True):
-            if accion == "✏️ Actualizar":
-                # Cargar datos del paciente en el formulario
-                paciente = st.session_state.pacientes[id_seleccionado]
+        if st.button("▶️ Ejecutar", use_container_width=True):
+            if accion == "✏️ Editar":
+                paciente = st.session_state.pacientes[id_sel]
                 st.session_state.ej4_nombre = paciente.nombre
                 st.session_state.ej4_peso = paciente.peso_kg
                 st.session_state.ej4_altura = paciente.altura_m
-                st.session_state.ej4_edit_index = id_seleccionado
-                st.success("✏️ Datos cargados para actualizar. Modifica y presiona 'Actualizar'.")
+                st.session_state.ej4_edit_index = id_sel
+                st.success("✏️ Datos cargados para editar. Modifica y presiona 'Actualizar'.")
             else:  # Eliminar
-                ok, msg = eliminar_paciente(id_seleccionado)
+                ok, msg = eliminar_paciente(id_sel)
                 if ok:
                     st.success(msg)
-                    # Si el paciente eliminado estaba en edición, cancelar
-                    if st.session_state.ej4_edit_index == id_seleccionado:
+                    if st.session_state.ej4_edit_index == id_sel:
                         st.session_state.ej4_edit_index = None
                         st.session_state.ej4_nombre = ""
                         st.session_state.ej4_peso = 70.0
                         st.session_state.ej4_altura = 1.75
-                    st.rerun()  # Forzar actualización de la tabla
+                    st.rerun()
                 else:
                     st.error(msg)
 
-        # Mostrar indicador de paciente en edición
+        # Indicador de edición
         if st.session_state.ej4_edit_index is not None:
             idx = st.session_state.ej4_edit_index
             if idx < len(st.session_state.pacientes):
                 p = st.session_state.pacientes[idx]
-                st.info(f"✏️ **Editando:** {p.nombre} (ID {idx})")
+                st.info(f"✏️ Editando: **{p.nombre}** (ID {idx})")
             else:
                 st.session_state.ej4_edit_index = None
 
     # ------------------------------------------------------------
-    # PASO 5: Estadísticas adicionales (opcional)
+    # PASO 7: Estadísticas resumen (opcional)
     # ------------------------------------------------------------
     if st.session_state.pacientes:
-        st.markdown("### 📊 Resumen de pacientes")
-        # Calcular estadísticas básicas
+        st.markdown("### 📊 Resumen")
         imcs = [p.calcular_imc() for p in st.session_state.pacientes]
-        col_est1, col_est2, col_est3 = st.columns(3)
-        col_est1.metric("👥 Total pacientes", len(st.session_state.pacientes))
-        col_est2.metric("📊 IMC promedio", f"{np.mean(imcs):.2f}")
-        clasificaciones = [p.clasificacion_imc() for p in st.session_state.pacientes]
-        col_est3.metric("🟢 Peso normal", clasificaciones.count("Peso normal"))
+        clasif = [p.clasificacion_imc() for p in st.session_state.pacientes]
+        c1, c2, c3 = st.columns(3)
+        c1.metric("👥 Total", len(st.session_state.pacientes))
+        c2.metric("📊 IMC promedio", f"{np.mean(imcs):.2f}")
+        c3.metric("🟢 Peso normal", clasif.count("Peso normal"))

@@ -24,8 +24,6 @@ opciones_menu = ["🏠 Home", "📊 Ejercicio 1: Flujo de caja", "📦 Ejercicio
 st.sidebar.image("Neurolab solo logo.png", use_container_width=True)
 st.sidebar.subheader("📋 Menú de Ejercicios")
 
-st.sidebar.markdown("**Sistema de asistencia del consultorio**")
-
 if st.sidebar.button("🏠 Volver al inicio", use_container_width=True):
     st.session_state.modulo_seleccionado = "🏠 Home"
     st.rerun()
@@ -40,6 +38,7 @@ modulos = st.sidebar.selectbox(
 if modulos == "🏠 Home":
     st.title("Desarrollo del aprendizaje en Python for Analytics")
     st.subheader("Módulo 1 – Python Fundamentals")
+    st.markdown("**Sistema de asistencia del consultorio**")
     st.header("Elaborado por: Guillermo Donayre Vásquez")
     st.subheader("Médico Neurólogo - Hospital Regional de Loreto")
     st.subheader("2026")

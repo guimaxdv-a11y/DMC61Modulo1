@@ -17,56 +17,90 @@ st.markdown("Bienvenidos al sistema de asistencia del consultorio")
 
 modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de pacientes", "Ejercicio 3", "Ejercicio 4"])
 
-if modulos == "Ejercicio 1: Flujo de caja":
+import streamlit as st
+import pandas as pd
 
+# ============================================
+# EJERCICIO 1: FLUJO DE CAJA CON LISTAS
+# ============================================
 
-  
-  st.subheader("Modulo de caja")
-  
-  valor_inicial = st.number_input("Ingrese el valor inicial")
-  valor_final = st.number_input("Ingrese el valor final")
-  
-  lista_numeros = list(range(int(valor_inicial), int(valor_final)))
-  st.write(lista_numeros)
-  
-elif modulos == "Módulo Arreglos":
-  
-  st.write("Bienvenido al módulo de Arreglos")
+st.subheader("📊 Módulo de Flujo de Caja")
+st.markdown("""
+En este módulo podrás registrar movimientos financieros (ingresos y gastos) 
+y visualizar el estado actual de tu flujo de caja en tiempo real.
+""")
 
-  cantidad_elementos = st.slider("Selecione la cantidad de elementos de su arreglo", 1,100)
-  cantidad_arreglo= np.arange(cantidad_elementos)
-  st.write(cantidad_arreglo)
+# Inicializar la lista de movimientos en session_state
+if "movimientos" not in st.session_state:
+    st.session_state.movimientos = []
 
-elif modulos == "Archivos":
-  
-  archivo = st.sidebar.file_uploader("Seleccione su archivo")
+# Widgets de entrada
+st.markdown("### Registrar nuevo movimiento")
 
-  if archivo is not None:
-    st.write("Su archivo ha sido cargado")
+col1, col2, col3 = st.columns(3)
 
-    if archivo.name.endswith(".csv"):
-      datos = pd.read_csv(archivo)
-      st.write(datos)
-    elif archivo.name.endswith(".xlsx"):
-      datos = pd.read_excel(archivo)
-      st.write(datos)
+with col1:
+    concepto = st.text_input("Concepto", placeholder="Ej: Consulta médica")
 
-  else:
-    st.write("Cargue su archivo")
+with col2:
+    tipo = st.selectbox("Tipo de movimiento", ["Ingreso", "Gasto"])
 
+with col3:
+    valor = st.number_input("Valor (S/.)", min_value=0.0, step=0.01, format="%.2f")
 
+# Botón para agregar movimiento
+if st.button("➕ Agregar movimiento"):
+    if concepto == "" or valor <= 0:
+        st.error("⚠️ Por favor, ingresa un concepto válido y un valor mayor a 0.")
+    else:
+        nuevo_movimiento = {
+            "Concepto": concepto,
+            "Tipo": tipo,
+            "Valor": valor
+        }
+        st.session_state.movimientos.append(nuevo_movimiento)
+        st.success(f"✅ Movimiento '{concepto}' agregado correctamente.")
 
+# Mostrar tabla de movimientos
+st.markdown("### Historial de movimientos")
 
+if len(st.session_state.movimientos) > 0:
+    df_movimientos = pd.DataFrame(st.session_state.movimientos)
+    st.dataframe(df_movimientos, use_container_width=True)
+
+    # Cálculos
+    total_ingresos = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Ingreso")
+    total_gastos = sum(m["Valor"] for m in st.session_state.movimientos if m["Tipo"] == "Gasto")
+    saldo_final = total_ingresos - total_gastos
+
+    # Métricas
+    st.markdown("### Resumen financiero")
+    col_m1, col_m2, col_m3 = st.columns(3)
+
+    with col_m1:
+        st.metric("💰 Total Ingresos", f"S/. {total_ingresos:.2f}")
+
+    with col_m2:
+        st.metric("💸 Total Gastos", f"S/. {total_gastos:.2f}")
+
+    with col_m3:
+        st.metric("📈 Saldo Final", f"S/. {saldo_final:.2f}")
+
+    # Estado del flujo de caja
+    st.markdown("### Estado del flujo de caja")
+    if saldo_final > 0:
+        st.success(f"✅ El flujo de caja está **A FAVOR** con un saldo de S/. {saldo_final:.2f}")
+    elif saldo_final < 0:
+        st.error(f"❌ El flujo de caja está **EN CONTRA** con un déficit de S/. {abs(saldo_final):.2f}")
+    else:
+        st.warning("⚠️ El flujo de caja está **EQUILIBRADO** (saldo = 0)")
 
 else:
-  
-  st.write("Bienvenido al módulo de Funciones")
+    st.info("ℹ️ Aún no has registrado movimientos. Comienza agregando uno arriba.")
 
-  capital_inicial = st.number_input("Capital inicial", min_value=0.0, value=1000.0)
-  tiempo_meses = st.number_input("Tiempo en meses", min_value=1, value=12)
-  tasa_porcentaje = st.number_input("Tasa de interés anual (%)", min_value=0.0, value=0.05)
-
-  resultado_interes_simple = lf.interes_simple(capital_inicial, tiempo_meses,tasa_porcentaje )
-  st.write(resultado_interes_simple)
+# Botón para reiniciar
+if st.button("🗑️ Reiniciar flujo de caja"):
+    st.session_state.movimientos = []
+    st.rerun()
 
   

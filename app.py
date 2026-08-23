@@ -13,12 +13,8 @@ st.sidebar.image("Neurolab solo logo.png")
 st.sidebar.title("Ejercicios")
 st.markdown("Bienvenidos al sistema de asistencia del consultorio")
 
-
-
 modulos = st.sidebar.selectbox ("Selecione un Modulo", ["Ejercicio 1: Flujo de caja", "Ejercicio 2: Registro de pacientes", "Ejercicio 3", "Ejercicio 4"])
 
-import streamlit as st
-import pandas as pd
 
 # ============================================
 # EJERCICIO 1: FLUJO DE CAJA CON LISTAS
